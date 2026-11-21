@@ -1,0 +1,30 @@
+---
+- name: Deploy portfolio
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull image
+      docker_image:
+        name: DOCKERHUB_USERNAME/portfolio:latest
+        source: pull
+
+    - name: Run container
+      docker_container:
+        name: portfolio
+        image: DOCKERHUB_USERNAME/portfolio:latest
+        ports:
+          - "80:80"
+        restart_policy: always
+        state: started
